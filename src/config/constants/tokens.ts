@@ -2053,6 +2053,16 @@ export const testnetTokens = defineTokens({
     'Wrapped BNB',
     'https://www.binance.com/',
   ),
+
+  tetherium: new Token(
+    TESTNET,
+    '0x4227Ca6E1Ba5578122a31aCC2930678F554640fC',
+    18,
+    'TeTherium',
+    'TeTherium Token',
+    'https://pancakeswap.finance/',
+  ),
+
   cake: new Token(
     TESTNET,
     '0xa35062141Fa33BCA92Ce69FeD37D0E8908868AAe',

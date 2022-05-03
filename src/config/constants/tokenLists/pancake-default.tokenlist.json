@@ -18,6 +18,16 @@
       "decimals": 18,
       "logoURI": "https://pancakeswap.finance/images/tokens/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c.png"
     },
+
+    {
+      "name": "TeTherium Token",
+      "symbol": "TeTherium",
+      "address": "0x4227Ca6E1Ba5578122a31aCC2930678F554640fC",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://pasteboard.co/YGE1CL8F05zW.png"
+    },
+
     {
       "name": "BUSD Token",
       "symbol": "BUSD",
@@ -34,7 +44,7 @@
       "decimals": 18,
       "logoURI": "https://pancakeswap.finance/images/tokens/0x2170Ed0880ac9A755fd29B2688956BD959F933F8.png"
     },
-    {
+    { 
       "name": "BTCB Token",
       "symbol": "BTCB",
       "address": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
