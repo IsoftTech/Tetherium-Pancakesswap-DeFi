@@ -14,11 +14,64 @@ import {
   DeserializedFarmConfig,
   FetchStatus,
 } from 'config/constants/types'
+import { Token, ChainId } from '@pancakeswap/sdk'
+import { TokenInfo, TokenList, Tags } from '@uniswap/token-lists'
+import { parseUnits } from '@ethersproject/units'
 import { NftToken, State as NftMarketState } from './nftMarket/types'
+
+/**
+ * Token instances created from token info.
+ */
+export class WrappedTokenInfo extends Token {
+  public readonly tokenInfo: TokenInfo
+
+  public readonly tags: TagInfo[]
+
+  constructor(tokenInfo: TokenInfo, tags: TagInfo[]) {
+    super(tokenInfo.chainId, tokenInfo.address, tokenInfo.decimals, tokenInfo.symbol, tokenInfo.name)
+    this.tokenInfo = tokenInfo
+    this.tags = tags
+  }
+
+  public get logoURI(): string | undefined {
+    return this.tokenInfo.logoURI
+  }
+}
+
+export type TokenAddressMap = Readonly<{
+  [chainId in ChainId]: Readonly<{ [tokenAddress: string]: { token: WrappedTokenInfo; list: TokenList } }>
+}>
+
+type TagDetails = Tags[keyof Tags]
+export interface TagInfo extends TagDetails {
+  id: string
+}
+
+/**
+ * An empty result, useful as a default.
+ */
+export const EMPTY_LIST: TokenAddressMap = {
+  [ChainId.MAINNET]: {},
+  [ChainId.TESTNET]: {},
+}
+
+export enum GAS_PRICE {
+  default = '5',
+  fast = '6',
+  instant = '7',
+  testnet = '10',
+}
+
+export const GAS_PRICE_GWEI = {
+  default: parseUnits(GAS_PRICE.default, 'gwei').toString(),
+  fast: parseUnits(GAS_PRICE.fast, 'gwei').toString(),
+  instant: parseUnits(GAS_PRICE.instant, 'gwei').toString(),
+  testnet: parseUnits(GAS_PRICE.testnet, 'gwei').toString(),
+}
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
 
-export type DeserializedPoolVault = DeserializedPool & (DeserializedCakeVault | DeserializedIfoCakeVault)
+export type DeserializedPoolVault = DeserializedPool & DeserializedCakeVault
 
 export interface BigNumberToJson {
   type: 'BigNumber'
@@ -66,6 +119,7 @@ export interface DeserializedFarm extends DeserializedFarmConfig {
 }
 
 export enum VaultKey {
+  CakeVaultV1 = 'cakeVaultV1',
   CakeVault = 'cakeVault',
   IfoPool = 'ifoPool',
 }
@@ -133,6 +187,7 @@ export interface SerializedFarmsState {
   userDataLoaded: boolean
   loadingKeys: Record<string, boolean>
   poolLength?: number
+  regularCakePerBlock?: number
 }
 
 export interface DeserializedFarmsState {
@@ -140,11 +195,11 @@ export interface DeserializedFarmsState {
   loadArchivedFarmsData: boolean
   userDataLoaded: boolean
   poolLength?: number
+  regularCakePerBlock?: number
 }
 
 export interface SerializedVaultFees {
   performanceFee: number
-  callFee: number
   withdrawalFee: number
   withdrawalFeePeriod: number
 }
@@ -153,12 +208,22 @@ export interface DeserializedVaultFees extends SerializedVaultFees {
   performanceFeeAsDecimal: number
 }
 
-export interface SerializedVaultUser {
+interface SerializedVaultUser {
   isLoading: boolean
   userShares: SerializedBigNumber
   cakeAtLastUserAction: SerializedBigNumber
   lastDepositedTime: string
   lastUserActionTime: string
+}
+
+export interface SerializedLockedVaultUser extends SerializedVaultUser {
+  lockStartTime: string
+  lockEndTime: string
+  userBoostedShare: SerializedBigNumber
+  locked: boolean
+  lockedAmount: SerializedBigNumber
+  currentPerformanceFee: SerializedBigNumber
+  currentOverdueFee: SerializedBigNumber
 }
 
 export interface DeserializedVaultUser {
@@ -169,50 +234,48 @@ export interface DeserializedVaultUser {
   lastUserActionTime: string
 }
 
-export interface DeserializedIfoVaultUser extends DeserializedVaultUser {
-  credit: string
+export interface DeserializedLockedVaultUser extends DeserializedVaultUser {
+  lastDepositedTime: string
+  lastUserActionTime: string
+  lockStartTime: string
+  lockEndTime: string
+  userBoostedShare: BigNumber
+  locked: boolean
+  lockedAmount: BigNumber
+  balance: {
+    cakeAsNumberBalance: number
+    cakeAsBigNumber: BigNumber
+    cakeAsDisplayBalance: string
+  }
+  currentPerformanceFee: BigNumber
+  currentOverdueFee: BigNumber
 }
 
-export interface SerializedIfoVaultUser extends SerializedVaultUser {
+export interface DeserializedIfoVaultUser extends DeserializedVaultUser {
   credit: string
 }
 
 export interface DeserializedCakeVault {
   totalShares?: BigNumber
+  totalLockedAmount?: BigNumber
   pricePerFullShare?: BigNumber
   totalCakeInVault?: BigNumber
-  estimatedCakeBountyReward?: BigNumber
-  totalPendingCakeHarvest?: BigNumber
   fees?: DeserializedVaultFees
-  userData?: DeserializedVaultUser
+  userData?: DeserializedLockedVaultUser
 }
 
 export interface SerializedCakeVault {
   totalShares?: SerializedBigNumber
+  totalLockedAmount?: SerializedBigNumber
   pricePerFullShare?: SerializedBigNumber
   totalCakeInVault?: SerializedBigNumber
-  estimatedCakeBountyReward?: SerializedBigNumber
-  totalPendingCakeHarvest?: SerializedBigNumber
   fees?: SerializedVaultFees
-  userData?: SerializedVaultUser
-}
-
-export interface SerializedIfoCakeVault extends Omit<SerializedCakeVault, 'userData'> {
-  userData?: SerializedIfoVaultUser
-  creditStartBlock?: number
-  creditEndBlock?: number
-}
-
-export interface DeserializedIfoCakeVault extends Omit<DeserializedCakeVault, 'userData'> {
-  userData?: DeserializedIfoVaultUser
-  creditStartBlock?: number
-  creditEndBlock?: number
+  userData?: SerializedLockedVaultUser
 }
 
 export interface PoolsState {
   data: SerializedPool[]
   cakeVault: SerializedCakeVault
-  ifoPool: SerializedIfoCakeVault
   userDataLoaded: boolean
 }
 
@@ -564,6 +627,7 @@ export interface UserRound {
 
 export interface State {
   farms: SerializedFarmsState
+  farmsV1: SerializedFarmsState
   pools: PoolsState
   predictions: PredictionsState
   lottery: LotteryState

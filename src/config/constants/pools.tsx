@@ -1,3 +1,4 @@
+import { BigNumber } from '@ethersproject/bignumber'
 import Trans from 'components/Trans'
 import { VaultKey } from 'state/types'
 import { CHAIN_ID } from './networks'
@@ -6,12 +7,27 @@ import { SerializedPoolConfig, PoolCategory } from './types'
 
 const serializedTokens = serializeTokens()
 
+export const MAX_LOCK_DURATION = 31536000
+export const UNLOCK_FREE_DURATION = 604800
+export const BOOST_WEIGHT = BigNumber.from('20000000000000')
+export const DURATION_FACTOR = BigNumber.from('31536000')
+
 export const vaultPoolConfig = {
-  [VaultKey.CakeVault]: {
+  [VaultKey.CakeVaultV1]: {
     name: <Trans>Auto CAKE</Trans>,
     description: <Trans>Automatic restaking</Trans>,
     autoCompoundFrequency: 5000,
     gasLimit: 380000,
+    tokenImage: {
+      primarySrc: `/images/tokens/${tokens.cake.address}.svg`,
+      secondarySrc: '/images/tokens/autorenew.svg',
+    },
+  },
+  [VaultKey.CakeVault]: {
+    name: <Trans>Stake CAKE</Trans>,
+    description: <Trans>Stake, Earn – And more!</Trans>,
+    autoCompoundFrequency: 5000,
+    gasLimit: 500000,
     tokenImage: {
       primarySrc: `/images/tokens/${tokens.cake.address}.svg`,
       secondarySrc: '/images/tokens/autorenew.svg',
@@ -35,14 +51,98 @@ const pools: SerializedPoolConfig[] = [
     stakingToken: serializedTokens.cake,
     earningToken: serializedTokens.cake,
     contractAddress: {
-      97: '0x1d32c2945C8FDCBc7156c553B7cEa4325a17f4f9',
-      56: '0x73feaa1eE314F8c655E354234017bE2193C9E24E',
+      97: '',
+      56: '0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652',
     },
     poolCategory: PoolCategory.CORE,
     harvest: true,
     tokenPerBlock: '10',
     sortOrder: 1,
     isFinished: false,
+  },
+  {
+    sousId: 278,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.rpg,
+    contractAddress: {
+      97: '',
+      56: '0xD1c395BCdC2d64ac6544A34A36185483B00530a1',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.06794',
+    version: 3,
+  },
+  {
+    sousId: 277,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.ankr,
+    contractAddress: {
+      97: '',
+      56: '0xc581345e1648CcE154978eA80bF8A584EC8aFDe0',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '4.6296',
+    version: 3,
+  },
+  {
+    sousId: 276,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.ceek,
+    contractAddress: {
+      97: '',
+      56: '0xED53944b1c0cEecDe1a413fDb4D0496e1a08ab58',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.8078',
+    version: 3,
+  },
+  {
+    sousId: 275,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.tinc,
+    contractAddress: {
+      97: '',
+      56: '0x9593462fF51A14633b243Ba3d054A8183d057A02',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.4677',
+    version: 3,
+  },
+  {
+    sousId: 274,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.pex,
+    contractAddress: {
+      97: '',
+      56: '0x641B1F2781B34a493E4308A0A3F1c7E042A9B952',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.3865',
+    version: 3,
+  },
+  {
+    sousId: 273,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.gmi,
+    contractAddress: {
+      97: '',
+      56: '0x0D53E0f2Eb384777442e4EB813d8f5fAcC742206',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '17.939',
+    version: 3,
   },
   {
     sousId: 272,
@@ -56,7 +156,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '3.404',
-    deployedBlockNumber: 16357010,
     version: 3,
   },
   {
@@ -71,7 +170,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '1.157',
-    deployedBlockNumber: 16037944,
     version: 3,
   },
   {
@@ -86,7 +184,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.4861',
-    deployedBlockNumber: 15897370,
     version: 3,
   },
   {
@@ -101,7 +198,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '4.629',
-    deployedBlockNumber: 15875611,
     version: 3,
   },
   {
@@ -116,7 +212,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '5.106',
-    deployedBlockNumber: 15696577,
     version: 3,
   },
   {
@@ -131,7 +226,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.09756',
-    deployedBlockNumber: 15556925,
     version: 3,
   },
   {
@@ -146,7 +240,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.162',
-    deployedBlockNumber: 15354343,
     version: 3,
   },
   {
@@ -161,7 +254,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '1.608',
-    deployedBlockNumber: 15352472,
     version: 3,
   },
   {
@@ -176,7 +268,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '157829',
-    deployedBlockNumber: 15161132,
   },
   {
     sousId: 263,
@@ -190,7 +281,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '7.502',
-    deployedBlockNumber: 15162508,
   },
   {
     sousId: 261,
@@ -204,7 +294,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.06481',
-    deployedBlockNumber: 14875151,
   },
   {
     sousId: 260,
@@ -218,7 +307,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '204.2',
-    deployedBlockNumber: 14729372,
   },
   {
     sousId: 259,
@@ -232,7 +320,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '1.585',
-    deployedBlockNumber: 14690369,
   },
   {
     sousId: 258,
@@ -246,7 +333,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.19',
-    deployedBlockNumber: 14552132,
   },
   {
     sousId: 257,
@@ -260,7 +346,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '2.893',
-    deployedBlockNumber: 14436172,
   },
   {
     sousId: 256,
@@ -274,7 +359,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.6435',
-    deployedBlockNumber: 14356854,
   },
   {
     sousId: 255,
@@ -288,7 +372,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '3.035',
-    deployedBlockNumber: 14351799,
   },
   {
     sousId: 254,
@@ -302,7 +385,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.1493',
-    deployedBlockNumber: 14301228,
   },
   {
     sousId: 253,
@@ -316,7 +398,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.1493',
-    deployedBlockNumber: 14271804,
   },
   {
     sousId: 252,
@@ -330,7 +411,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.3281',
-    deployedBlockNumber: 14118300,
   },
   {
     sousId: 251,
@@ -3643,7 +3723,6 @@ const pools: SerializedPoolConfig[] = [
     enableEmergencyWithdraw: true,
     sortOrder: 999,
     tokenPerBlock: '7.502',
-    deployedBlockNumber: 15150333,
   },
 ].filter((p) => !!p.contractAddress[CHAIN_ID])
 

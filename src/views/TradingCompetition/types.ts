@@ -88,13 +88,13 @@ export interface UserRewardsProps {
 
 export interface UserTradingInformationProps {
   hasRegistered?: boolean
+  isUserActive?: boolean
   hasUserClaimed?: boolean
   userRewardGroup?: string
   userCakeRewards?: string
-  userLazioRewards?: string
-  userPortoRewards?: string
-  userSantosRewards?: string
+  userMoboxRewards?: string
   userPointReward?: string
+  canClaimMysteryBox?: boolean
   canClaimNFT?: boolean
 }
 
@@ -106,5 +106,7 @@ export interface YourScoreProps extends CompetitionProps {
     volume?: number
     // eslint-disable-next-line camelcase
     next_rank?: number
+    moboxVolumeRank?: string
+    moboxVolume?: string
   }
 }

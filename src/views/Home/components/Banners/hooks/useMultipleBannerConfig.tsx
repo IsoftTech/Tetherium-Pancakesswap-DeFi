@@ -28,12 +28,12 @@ export const useMultipleBannerConfig = () => {
           banner: <IFOBanner />,
         },
         {
-          shouldRender: isRenderLotteryBanner,
-          banner: <LotteryBanner />,
-        },
-        {
           shouldRender: false,
           banner: <CompetitionBanner />,
+        },
+        {
+          shouldRender: isRenderLotteryBanner,
+          banner: <LotteryBanner />,
         },
       ]
         .filter((d) => d.shouldRender)

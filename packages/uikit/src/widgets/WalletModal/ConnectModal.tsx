@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled, { useTheme } from "styled-components";
+import { isMobile } from "react-device-detect";
 import getExternalLinkProps from "../../util/getExternalLinkProps";
 import Grid from "../../components/Box/Grid";
 import Box from "../../components/Box/Box";
@@ -46,7 +47,11 @@ const getPreferredConfig = (walletConfig: Config[]) => {
 
   return [
     preferredWallet,
-    ...sortedConfig.filter((sortedWalletConfig) => sortedWalletConfig.title !== preferredWalletName),
+    ...sortedConfig
+      .filter((sortedWalletConfig) => sortedWalletConfig.title !== preferredWalletName)
+      .filter((sortedWalletConfig) =>
+        typeof sortedWalletConfig.mobileOnly === "boolean" ? sortedWalletConfig.mobileOnly && isMobile : true
+      ),
   ];
 };
 
@@ -54,7 +59,11 @@ const ConnectModal: React.FC<Props> = ({ login, onDismiss = () => null, displayC
   const [showMore, setShowMore] = useState(false);
   const theme = useTheme();
   const sortedConfig = getPreferredConfig(config);
-  const displayListConfig = showMore ? sortedConfig : sortedConfig.slice(0, displayCount);
+  // Filter out WalletConnect if user is inside TrustWallet built-in browser
+  const walletsToShow = window.ethereum?.isTrust
+    ? sortedConfig.filter((wallet) => wallet.title !== "WalletConnect")
+    : sortedConfig;
+  const displayListConfig = showMore ? walletsToShow : walletsToShow.slice(0, displayCount);
 
   return (
     <ModalContainer minWidth="320px">
